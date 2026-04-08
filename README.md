@@ -1,4 +1,4 @@
-# MoTA AI-GIS PoC — Upgraded Minimal Runnable Reference System
+# MoTA AI-GIS PoC — Runnable minimal prototype
 
 This package is a **single-container monolithic Docker reference system** for the Jordan tourism AI-GIS PoC.
 
