@@ -120,12 +120,14 @@ This is still a **minimal runnable** package, not a full final ToR implementatio
 
 Main simplifications that remain:
 
+- all data is dummy. data structure may not match with the real data structure of MoTA.
 - simple session auth instead of db-based auth
 - lightweight CSV import logic rather than a full ETL workflow engine
 - HTML executive summary export instead of PDF export
 - simple seasonal forecast method instead of SARIMA/Prophet
 - simplified front-end implemented in plain HTML/JS/CSS
 - simplified demo boundary geometries in seed data
+- not fully tested. there may be bugs.
 
 ## Suggested next step after this package
 
