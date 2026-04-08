@@ -2,7 +2,7 @@
 
 This package is a **single-container monolithic Docker reference system** for the Jordan tourism AI-GIS PoC.
 
-It keeps the architecture intentionally compact, but adds the main next-step features needed after the first minimal build:
+It keeps the architecture intentionally compact, but added majority of main features described in the ToR:
 
 - PostgreSQL 16 + PostGIS in the same container
 - FastAPI backend
@@ -11,7 +11,7 @@ It keeps the architecture intentionally compact, but adds the main next-step fea
 - CSV import pipelines for key datasets
 - overview, investment explorer, simulation, and admin/import pages
 - CSV / HTML export endpoints
-- sample data for all 12 governorates
+- sample dummy data for all 12 governorates
 
 ## Included functions
 
@@ -55,7 +55,7 @@ It keeps the architecture intentionally compact, but adds the main next-step fea
 ## Quick start
 
 ```bash
-cd mota-aigis-poc-upgraded
+cd motapoc 
 cp .env.example .env
 docker compose up --build -d
 ```
