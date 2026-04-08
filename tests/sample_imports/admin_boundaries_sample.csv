@@ -1,0 +1,3 @@
+governorate_id,governorate_code,governorate_name_en,wkt
+1,AMM,Amman,"POLYGON((35.80 31.80,36.20 31.80,36.20 31.40,35.80 31.40,35.80 31.80))"
+2,AQA,Aqaba,"POLYGON((35.00 29.80,35.30 29.80,35.30 29.30,35.00 29.30,35.00 29.80))"

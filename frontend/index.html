@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoTA AI-GIS PoC Reference System</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div id="login-screen" class="overlay">
+    <div class="login-card">
+      <h1>MoTA AI-GIS PoC</h1>
+      <p class="muted">Phase 2 patched reference system</p>
+      <form id="login-form">
+        <label>Username</label>
+        <input id="login-username" value="admin" required />
+        <label>Password</label>
+        <input id="login-password" type="password" value="admin123" required />
+        <button type="submit">Sign in</button>
+      </form>
+      <div id="login-error" class="error"></div>
+      <div class="help-box">Default login: <strong>admin / admin123</strong></div>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div>
+      <h1>MoTA AI-GIS PoC Reference System</h1>
+      <div class="subtitle">Overview · Investment Explorer · Scenario Simulation · Data Import/Admin · Methodology</div>
+    </div>
+    <div class="right-tools">
+      <span id="current-user" class="pill">Not signed in</span>
+      <button id="btn-export-overview" class="secondary">Export Overview CSV</button>
+      <button id="btn-export-summary" class="secondary">Executive Summary</button>
+      <button id="btn-logout" class="secondary">Logout</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="investment">Investment Explorer</button>
+    <button class="tab" data-tab="simulation">Scenario Simulation</button>
+    <button class="tab" data-tab="imports">Data Import / Admin</button>
+    <button class="tab" data-tab="methodology">Methodology</button>
+  </nav>
+
+  <main class="page">
+    <section id="tab-overview" class="tab-panel active">
+      <div class="toolbar wrap-toolbar">
+        <button id="btn-recompute">Recompute Indicators</button>
+        <div class="inline-controls compact-inline">
+          <label class="control-label">Forecast model</label>
+          <select id="forecast-model">
+            <option value="seasonal_trend_v2">Seasonal Trend v2</option>
+            <option value="seasonal_naive">Seasonal Naive</option>
+          </select>
+        </div>
+        <button id="btn-forecast">Run Forecast</button>
+      </div>
+
+      <section class="cards" id="kpis"></section>
+
+      <section class="grid two-col">
+        <div class="panel">
+          <div class="panel-head panel-head-wrap">
+            <div>
+              <h2>National GIS View</h2>
+              <div class="muted small-text">OpenStreetMap basemap with Jordan governorate overlay, tourism site layer, and analytics choropleth.</div>
+            </div>
+            <div class="inline-controls stacked-inline">
+              <div class="inline-controls compact-inline">
+                <label for="map-metric" class="control-label">Map metric</label>
+                <select id="map-metric">
+                  <option value="priority_score">Priority score</option>
+                  <option value="latest_average_occupancy_rate">Occupancy rate</option>
+                  <option value="visitors_per_1000_beds">Visitors per 1,000 beds</option>
+                  <option value="capacity_classification">Capacity classification</option>
+                  <option value="next_forecast_value">Next forecast</option>
+                </select>
+              </div>
+              <label class="checkbox-row"><input id="toggle-sites" type="checkbox" checked /> Show tourism sites</label>
+            </div>
+          </div>
+          <div id="map-shell"><div id="map"></div></div>
+          <div id="map-legend" class="map-legend"></div>
+          <div id="map-help" class="help-box compact-help">Click a governorate on the map or in the ranking table to open the regional deep-dive panel.</div>
+        </div>
+        <div class="panel">
+          <h2>Governorate Detail</h2>
+          <div id="detail-content" class="muted">Select a governorate in the table or map.</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Governorate Ranking</h2>
+          <button id="btn-refresh-overview" class="secondary">Refresh</button>
+        </div>
+        <table id="regions-table">
+          <thead><tr><th>Governorate</th><th>Visitors</th><th>Beds</th><th>Occupancy</th><th>Priority</th><th>Class</th><th>Export</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </section>
+
+    <section id="tab-investment" class="tab-panel">
+      <section class="panel">
+        <h2>Investment Priority Ranking</h2>
+        <div class="muted">Uses latest priority score, score components, forecast pressure, and capacity classification from the analytics layer.</div>
+        <table id="investment-table">
+          <thead><tr><th>Rank</th><th>Governorate</th><th>Priority</th><th>Class</th><th>Next Forecast</th><th>Reason</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </section>
+      <section class="grid two-col">
+        <div class="panel"><h2>Latest Forecast Runs</h2><div id="forecast-runs"></div></div>
+        <div class="panel"><h2>Forecast Run Detail</h2><div id="forecast-detail" class="muted">Choose a forecast run.</div></div>
+      </section>
+    </section>
+
+    <section id="tab-simulation" class="tab-panel">
+      <section class="grid two-col">
+        <div class="panel">
+          <h2>Run Scenario</h2>
+          <form id="simulation-form" class="stack-form">
+            <label>Governorate</label><select id="sim-governorate"></select>
+            <label>Target month</label><input id="sim-target-month" type="date" value="2026-12-01" required />
+            <label>Additional beds</label><input id="sim-additional-beds" type="number" value="500" min="0" required />
+            <label>Additional rooms</label><input id="sim-additional-rooms" type="number" value="200" min="0" required />
+            <label>Induced demand ratio</label><input id="sim-induced-demand" type="number" value="0.05" step="0.01" min="0" />
+            <button type="submit">Run scenario</button>
+          </form>
+          <div class="help-box">Phase 2 simulation is explicitly forecast-based: it uses the selected future month as the baseline.</div>
+        </div>
+        <div class="panel"><h2>Latest Scenario Result</h2><div id="simulation-result" class="muted">Run a scenario to see the comparison.</div></div>
+      </section>
+      <section class="panel"><h2>Scenario History</h2><div id="simulation-runs"></div></section>
+    </section>
+
+    <section id="tab-imports" class="tab-panel">
+      <section class="grid two-col">
+        <div class="panel">
+          <h2>CSV Import</h2>
+          <form id="import-form" class="stack-form">
+            <label>Dataset type</label>
+            <select id="import-dataset-type">
+              <option value="visitors_monthly">visitors_monthly</option>
+              <option value="rooms_beds_monthly">rooms_beds_monthly</option>
+              <option value="hotel_occupancy_monthly">hotel_occupancy_monthly</option>
+              <option value="admin_boundaries">admin_boundaries</option>
+            </select>
+            <label>CSV file</label><input id="import-file" type="file" accept=".csv" required />
+            <button type="submit">Upload and import</button>
+          </form>
+          <div class="help-box">Import jobs now store basic validation summary: duplicates, null-like values, invalid months, and negative values.</div>
+        </div>
+        <div class="panel"><h2>Import Jobs</h2><div id="import-jobs"></div></div>
+      </section>
+      <section class="panel"><h2>Selected Import Errors</h2><div id="import-errors" class="muted">Choose an import job with errors.</div></section>
+      <section class="grid two-col">
+        <div class="panel"><h2>Scoring Configuration</h2><div id="config-editor"></div></div>
+        <div class="panel"><h2>Configuration Notes</h2><div class="help-box">Weights and thresholds below directly affect classification and ranking.</div><div id="config-help" class="muted"></div></div>
+      </section>
+    </section>
+
+    <section id="tab-methodology" class="tab-panel">
+      <section class="grid two-col">
+        <div class="panel"><h2>Methodology</h2><div id="methodology-content" class="muted">Loading methodology…</div></div>
+        <div class="panel"><h2>PoC Limitations</h2><div id="limitations-content" class="muted">Loading limitations…</div></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

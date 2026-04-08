@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: mota-aigis-poc-upgraded
+    ports:
+      - "8080:80"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-mota_poc}
+      POSTGRES_USER: ${POSTGRES_USER:-poc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pocpass}
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8080
+      SESSION_SECRET: ${SESSION_SECRET:-change-this-session-secret}
+      DATABASE_URL: postgresql+psycopg://poc:pocpass@127.0.0.1:5432/mota_poc
+    volumes:
+      - pgdata:/var/lib/postgresql/15/main
+    healthcheck:
+      test: ["CMD-SHELL", "/app/docker/healthcheck.sh"]
+      interval: 20s
+      timeout: 10s
+      retries: 8
+
+volumes:
+  pgdata:
