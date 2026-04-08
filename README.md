@@ -120,7 +120,7 @@ This is still a **minimal runnable** package, not a full final ToR implementatio
 
 Main simplifications that remain:
 
-- simple session auth instead of enterprise IAM
+- simple session auth instead of db-based auth
 - lightweight CSV import logic rather than a full ETL workflow engine
 - HTML executive summary export instead of PDF export
 - simple seasonal forecast method instead of SARIMA/Prophet
